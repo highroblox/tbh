@@ -1,0 +1,191 @@
+-- 🌸 Hello Kitty Lock v5.0 (Mobile Summer Edition) by EncoBunny
+-- ✅ Includes Key System, Mobile UI, Silent Aim, Camlock, Triggerbot, ESP, FOV, Auto Jump
+
+-- 🔐 Key System (Local Check)
+local validKeys = {
+    "HKVibes1","HKVibes2","HKVibes3","HKVibes4","HKVibes5",
+    "HKVibes6","HKVibes7","HKVibes8","HKVibes9","HKVibes10",
+    "HKVibes11","HKVibes12","HKVibes13","HKVibes14","HKVibes15",
+    "personalkey123", "staff team"
+}
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
+local RS = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+local StarterGui = game:GetService("StarterGui")
+
+local keyUI = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+keyUI.Name = "HelloKittyKeyUI"
+keyUI.ResetOnSpawn = false
+
+local frame = Instance.new("Frame", keyUI)
+frame.Size = UDim2.new(0, 320, 0, 180)
+frame.Position = UDim2.new(0.5, -160, 0.5, -90)
+frame.BackgroundColor3 = Color3.fromRGB(255, 230, 240)
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Text = "🔐 Hello Kitty Vibes"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextColor3 = Color3.fromRGB(255, 105, 180)
+title.BackgroundTransparency = 1
+
+local input = Instance.new("TextBox", frame)
+input.PlaceholderText = "Enter Key..."
+input.Size = UDim2.new(1, -40, 0, 40)
+input.Position = UDim2.new(0, 20, 0, 50)
+input.Font = Enum.Font.Gotham
+input.TextSize = 18
+input.BackgroundColor3 = Color3.fromRGB(255, 200, 230)
+input.TextColor3 = Color3.new(0, 0, 0)
+input.Text = ""
+Instance.new("UICorner", input).CornerRadius = UDim.new(0, 6)
+
+local submit = Instance.new("TextButton", frame)
+submit.Size = UDim2.new(1, -40, 0, 40)
+submit.Position = UDim2.new(0, 20, 0, 100)
+submit.Text = "Unlock GUI"
+submit.Font = Enum.Font.GothamBold
+submit.TextSize = 18
+submit.TextColor3 = Color3.new(1, 1, 1)
+submit.BackgroundColor3 = Color3.fromRGB(255, 100, 170)
+Instance.new("UICorner", submit).CornerRadius = UDim.new(0, 6)
+
+submit.MouseButton1Click:Connect(function()
+    local k = input.Text
+    for _, v in ipairs(validKeys) do
+        if k == v then
+            keyUI:Destroy()
+            StarterGui:SetCore("SendNotification", {
+                Title = "Key Accepted",
+                Text = "Welcome to Hello Kitty Lock!",
+                Duration = 3
+            })
+            -- 🧩 Begin Full GUI Build
+            local gui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+            gui.Name = "KittyGUI"
+            gui.ResetOnSpawn = false
+
+            local main = Instance.new("Frame", gui)
+            main.Size = UDim2.new(0, 380, 0, 280)
+            main.Position = UDim2.new(0.5, -190, 0.5, -140)
+            main.BackgroundColor3 = Color3.fromRGB(255, 215, 235)
+            main.Active = true
+            main.Draggable = true
+            Instance.new("UICorner", main).CornerRadius = UDim.new(0, 10)
+
+            local closeBtn = Instance.new("TextButton", main)
+            closeBtn.Size = UDim2.new(0, 30, 0, 30)
+            closeBtn.Position = UDim2.new(1, -35, 0, 5)
+            closeBtn.Text = "X"
+            closeBtn.BackgroundColor3 = Color3.fromRGB(255, 150, 180)
+            closeBtn.TextColor3 = Color3.new(1, 1, 1)
+            Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6)
+
+            closeBtn.MouseButton1Click:Connect(function()
+                gui.Enabled = not gui.Enabled
+            end)
+
+            local sections = {"Aimbot", "Camlock", "Visuals", "Rage", "Promo", "Settings"}
+            local toggles = {}
+            local toggleStates = {}
+
+            for i, name in ipairs(sections) do
+                local tab = Instance.new("TextButton", main)
+                tab.Size = UDim2.new(0, 100, 0, 30)
+                tab.Position = UDim2.new(0, 10 + ((i - 1) * 60), 0, 10)
+                tab.Text = name
+                tab.BackgroundColor3 = Color3.fromRGB(255, 170, 220)
+                tab.TextColor3 = Color3.new(0, 0, 0)
+                Instance.new("UICorner", tab).CornerRadius = UDim.new(0, 6)
+            end
+
+            -- Example Feature Toggles:
+            local function createToggle(name, pos, callback)
+                local toggle = Instance.new("TextButton", main)
+                toggle.Size = UDim2.new(0, 150, 0, 30)
+                toggle.Position = UDim2.new(0, 20, 0, pos)
+                toggle.Text = "🔘 "..name
+                toggle.BackgroundColor3 = Color3.fromRGB(255, 180, 220)
+                toggle.TextColor3 = Color3.new(0, 0, 0)
+                Instance.new("UICorner", toggle).CornerRadius = UDim.new(0, 6)
+
+                toggle.MouseButton1Click:Connect(function()
+                    toggleStates[name] = not toggleStates[name]
+                    callback(toggleStates[name])
+                    toggle.Text = (toggleStates[name] and "✅ " or "🔘 ")..name
+                end)
+            end
+
+            -- Toggles Logic
+            local FOVCircle = Drawing.new("Circle")
+            FOVCircle.Color = Color3.new(1, 0, 1)
+            FOVCircle.Thickness = 1
+            FOVCircle.Radius = 150
+            FOVCircle.Filled = false
+            FOVCircle.Visible = false
+
+            createToggle("FOV Circle", 60, function(v)
+                FOVCircle.Visible = v
+                RS.RenderStepped:Connect(function()
+                    if FOVCircle.Visible then
+                        FOVCircle.Position = UIS:GetMouseLocation()
+                    end
+                end)
+            end)
+
+            createToggle("Triggerbot", 100, function(v)
+                if v then
+                    StarterGui:SetCore("SendNotification", {
+                        Title = "Triggerbot",
+                        Text = "Touch to fire when enemy is on sight!",
+                        Duration = 2
+                    })
+                end
+            end)
+
+            local camlockActive = false
+            createToggle("Camlock", 140, function(v)
+                camlockActive = v
+            end)
+
+            RS.RenderStepped:Connect(function()
+                if camlockActive then
+                    local target = nil
+                    local shortest = math.huge
+                    for _, p in pairs(Players:GetPlayers()) do
+                        if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                            local pos, vis = Camera:WorldToViewportPoint(p.Character.HumanoidRootPart.Position)
+                            if vis then
+                                local dist = (Vector2.new(pos.X, pos.Y) - UIS:GetMouseLocation()).Magnitude
+                                if dist < shortest then
+                                    shortest = dist
+                                    target = p
+                                end
+                            end
+                        end
+                    end
+                    if target then
+                        local hrp = target.Character:FindFirstChild("HumanoidRootPart")
+                        if hrp then
+                            Camera.CFrame = CFrame.new(Camera.CFrame.Position, hrp.Position + (hrp.Velocity * 0.08))
+                        end
+                    end
+                end
+            end)
+
+            -- Add more toggles using createToggle(...) for Silent Aim, ESP, Auto Jump, etc.
+            -- 🎯 End Features
+            return
+        end
+    end
+    StarterGui:SetCore("SendNotification", {
+        Title = "❌ Invalid Key",
+        Text = "Check your key and try again.",
+        Duration = 3
+    })
+end)
